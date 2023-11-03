@@ -1,6 +1,13 @@
 from functools import partial
-import splitpfn.encoders as encoders
 
+
+import os
+print(os.listdir('C:\\Users\\draco\\uni\\hiwi\\SplitPFN\\'))
+
+import sys
+sys.path.insert(0, 'C:\\Users\\draco\\uni\\hiwi\\SplitPFN\\')
+
+import splitpfn.encoders as encoders
 from splitpfn.transformer import TransformerModel
 
 # from splitpfn.split_transformer import SplitTransformerModel

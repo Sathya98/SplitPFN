@@ -213,12 +213,12 @@ class SplitTransformerModel(nn.Module):
 
         # add zeros to whichever among trin and test is shorter to make them equally long
         if len(train_x) < len(test_x):
-            train_x = torch.cat([train_x, torch.zeros_like(test_x[: len(train_x)])], 0)
+            train_x = torch.cat([train_x, torch.zeros_like(test_x[: len(test_x) - len(train_x)])], 0)
         elif len(test_x) < len(train_x):
-            test_x = torch.cat([test_x, torch.zeros_like(train_x[: len(test_x)])], 0)
+            test_x = torch.cat([test_x, torch.zeros_like(train_x[: len(train_x) - len(test_x)])], 0)
         print(train_x.shape, test_x.shape)
 
-        src = torch.cat([global_src, style_src, train_x, x_src[single_eval_pos:]], 0)
+        src = torch.cat([global_src, style_src, train_x], 0)
 
         if self.input_ln is not None:
             src = self.input_ln(src)
@@ -227,16 +227,9 @@ class SplitTransformerModel(nn.Module):
             src = self.pos_encoder(src)
 
         output = self.transformer_encoder(src)
-        output = self.decoder(output)
-        return output[
-            single_eval_pos
-            + len(style_src)
-            + (
-                self.global_att_embeddings.num_embeddings
-                if self.global_att_embeddings
-                else 0
-            ) :
-        ]
+        output = self.decoder(tgt=test_x,memory=output)
+        output = self.clf_head(output)
+        return output[:len(x_src) - (single_eval_pos + len(style_src))]
 
     @torch.no_grad()
     def init_from_small_model(self, small_model):
@@ -343,9 +336,9 @@ class TransformerDecoderLayer(nn.Module):
     ):
         # Encoder-Decoder attention (since self attention is removed)
         tgt2 = self.multihead_attn(
+            memory,
+            memory,
             tgt,
-            memory,
-            memory,
             attn_mask=memory_mask,
             key_padding_mask=memory_key_padding_mask,
         )[0]
