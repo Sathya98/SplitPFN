@@ -3,11 +3,12 @@ from typing import Optional
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from torch import Tensor
 from torch.nn import Module, TransformerEncoder
 
-from tabpfn.layer import TransformerEncoderLayer, _get_activation_fn
-from tabpfn.utils import SeqBN, bool_mask_to_att_mask
+from splitpfn.layer import TransformerEncoderLayer, _get_activation_fn
+from splitpfn.utils import SeqBN, bool_mask_to_att_mask
 
 
 class SplitTransformerModel(nn.Module):
@@ -348,6 +349,7 @@ class TransformerDecoderLayer(nn.Module):
             attn_mask=memory_mask,
             key_padding_mask=memory_key_padding_mask,
         )[0]
+
         tgt = tgt + self.dropout1(tgt2)
 
         # Add & norm (using the first norm layer which was previously the second)

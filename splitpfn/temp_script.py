@@ -7,7 +7,8 @@ from datetime import datetime
 
 import torch
 
-
+import sys
+sys.path.insert(0, '..')
 from scripts.model_builder import get_model
 
 from scripts.model_configs import *

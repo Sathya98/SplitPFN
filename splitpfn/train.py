@@ -10,14 +10,14 @@ from contextlib import nullcontext
 import torch
 from torch import nn
 
-import tabpfn.utils as utils
-from tabpfn.transformer import TransformerModel
-from tabpfn.split_transformer import SplitTransformerModel
-from tabpfn.utils import get_cosine_schedule_with_warmup, get_openai_lr, StoreDictKeyPair, get_weighted_single_eval_pos_sampler, get_uniform_single_eval_pos_sampler
-import tabpfn.priors as priors
-import tabpfn.encoders as encoders
-import tabpfn.positional_encodings as positional_encodings
-from tabpfn.utils import init_dist
+import splitpfn.utils as utils
+from splitpfn.transformer import TransformerModel
+from splitpfn.split_transformer import SplitTransformerModel
+from splitpfn.utils import get_cosine_schedule_with_warmup, get_openai_lr, StoreDictKeyPair, get_weighted_single_eval_pos_sampler, get_uniform_single_eval_pos_sampler
+import splitpfn.priors as priors
+import splitpfn.encoders as encoders
+import splitpfn.positional_encodings as positional_encodings
+from splitpfn.utils import init_dist
 from torch.cuda.amp import autocast, GradScaler
 from torch import nn
 
@@ -39,7 +39,7 @@ def train(priordataloader_class, criterion, encoder_generator, emsize=200, nhid=
           initializer=None, initialize_with_model=None, train_mixed_precision=False, efficient_eval_masking=True, **model_extra_args
           ):
     device = gpu_device if torch.cuda.is_available() else 'cpu:0'
-    print(f'Using {device} device')
+    print(f'Using {device} device this i changed')
     using_dist, rank, device = init_dist(device)
     single_eval_pos_gen = single_eval_pos_gen if callable(single_eval_pos_gen) else lambda: single_eval_pos_gen
 
