@@ -7,7 +7,7 @@ from datetime import datetime
 
 import torch
 
-from scripts.model_builder import get_model
+from scripts.model_builder import get_model, save_model
 
 from scripts.model_configs import *
 
@@ -169,7 +169,7 @@ config_sample['batch_size'] = 4
 
 # %%
 model = get_model(config_sample, device, should_train=True, verbose=1)
-
+save_model(model[2], base_path, f'split_transformer_models/prior_diff_real_checkpoint{model_string}_n_{0}_epoch_{0}.cpkt', config_sample)
 # %%
 
 
