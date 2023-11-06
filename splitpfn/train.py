@@ -2,6 +2,7 @@ import os
 import itertools
 import argparse
 import time
+import json
 import datetime
 import yaml
 from contextlib import nullcontext
@@ -39,7 +40,7 @@ def train(priordataloader_class, criterion, encoder_generator, emsize=200, nhid=
           initializer=None, initialize_with_model=None, train_mixed_precision=False, efficient_eval_masking=True, **model_extra_args
           ):
     device = gpu_device if torch.cuda.is_available() else 'cpu:0'
-    print(f'Using {device} device this i changed')
+    print(f'Using {device} device')
     using_dist, rank, device = init_dist(device)
     single_eval_pos_gen = single_eval_pos_gen if callable(single_eval_pos_gen) else lambda: single_eval_pos_gen
 
@@ -186,12 +187,14 @@ def train(priordataloader_class, criterion, encoder_generator, emsize=200, nhid=
 
     total_loss = float('inf')
     total_positional_losses = float('inf')
+    loss_dict = {}
     try:
         for epoch in (range(1, epochs + 1) if epochs is not None else itertools.count(1)):
 
             epoch_start_time = time.time()
             total_loss, total_positional_losses, time_to_get_batch, forward_time, step_time, nan_share, ignore_share =\
                 train_epoch()
+            loss_dict[epoch] = total_loss
             if hasattr(dl, 'validate') and epoch % validation_period == 0:
                 with torch.no_grad():
                     val_score = dl.validate(model)
@@ -215,6 +218,10 @@ def train(priordataloader_class, criterion, encoder_generator, emsize=200, nhid=
             scheduler.step()
     except KeyboardInterrupt:
         pass
+
+    #storing loss_dict as a json
+    with open('losses.json', 'w') as f:
+        json.dump(loss_dict, f)
 
     if rank == 0: # trivially true for non-parallel training
         if isinstance(model, torch.nn.parallel.DistributedDataParallel):

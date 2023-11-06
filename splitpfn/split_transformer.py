@@ -209,7 +209,7 @@ class SplitTransformerModel(nn.Module):
 
         train_x = x_src[:single_eval_pos] + y_src[:single_eval_pos]
 
-        test_x = x_src[single_eval_pos:] + y_src[single_eval_pos:]
+        test_x = x_src[single_eval_pos:] # + y_src[single_eval_pos:]
 
         # add zeros to whichever among trin and test is shorter to make them equally long
         if len(train_x) < len(test_x):
@@ -229,7 +229,7 @@ class SplitTransformerModel(nn.Module):
         output = self.transformer_encoder(src)
         output = self.decoder(tgt=test_x,memory=output)
         output = self.clf_head(output)
-        return output[:len(x_src) - (single_eval_pos + len(style_src))]
+        return output[:len(x_src) - single_eval_pos]
 
     @torch.no_grad()
     def init_from_small_model(self, small_model):

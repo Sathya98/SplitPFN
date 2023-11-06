@@ -324,8 +324,6 @@ def get_model(
             model_proto=model_proto,
             **kwargs,
         ):
-            print(kwargs["model"])
-            # kwargs['model'] = SplitTransformerModel(kwargs['model'].encoder,)
             kwargs = {**extra_kwargs, **kwargs}  # new args overwrite pre-specified args
             return model_proto.get_batch(
                 batch_size=batch_size,
@@ -442,8 +440,6 @@ def get_model(
     )
 
     epochs = 0 if not should_train else config["epochs"]
-    print(model_proto)
-    print(extra_kwargs)
     model = train(
         model_proto.DataLoader,
         loss,

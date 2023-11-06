@@ -140,7 +140,7 @@ config['canonical_y_encoder'] = False
 config['aggregate_k_gradients'] = 8
 config['batch_size'] = 8*config['aggregate_k_gradients']
 config['num_steps'] = 1024//config['aggregate_k_gradients']
-config['epochs'] = 1 #400
+config['epochs'] = 400
 config['total_available_time_in_s'] = None #60*60*22 # 22 hours for some safety...
 
 config['train_mixed_precision'] = True
